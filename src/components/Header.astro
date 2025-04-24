@@ -1,0 +1,605 @@
+---
+import { SITE_TITLE } from "../consts";
+import { getCollection } from "astro:content";
+
+const deepSeekMathPosts = await getCollection("deepseek");
+const llamaPost = await getCollection("llama");
+const qwenPosts = await getCollection("qwen");
+const generalPosts = await getCollection("general");
+const mathstralPosts = await getCollection("mathstral");
+---
+
+<header class="header">
+  <div class="container">
+    <nav id="main-nav" class="main-nav">
+      <div class="logo">
+        <a href="/">{SITE_TITLE}</a>
+      </div>
+
+      <button id="menu-toggle" class="menu-toggle" aria-label="Toggle menu">
+        <span class="hamburger"></span>
+      </button>
+
+      <div class="nav-links">
+        <a href="/" class="nav-link">Inicio</a>
+
+        <div class="nav-dropdown">
+          <a href="/documentacion" class="nav-link">Modelos</a>
+          <div class="dropdown-content">
+            <div class="dropdown-section">
+              <h3>General</h3>
+              {
+                generalPosts.map((post) => (
+                  <a
+                    href={`/documentacion/general/${post.slug}`}
+                    class="dropdown-item"
+                  >
+                    {post.data.title}
+                  </a>
+                ))
+              }
+            </div>
+            <div class="dropdown-section">
+              <h3>Meta Llama 3</h3>
+              {
+                llamaPost.map((post) => (
+                  <a
+                    href={`/documentacion/llama/${post.slug}`}
+                    class="dropdown-item"
+                  >
+                    {post.data.title}
+                  </a>
+                ))
+              }
+            </div>
+            <div class="dropdown-section">
+              <h3>Qwen</h3>
+              {
+                qwenPosts.map((post) => (
+                  <a
+                    href={`/documentacion/qwen/${post.slug}`}
+                    class="dropdown-item"
+                  >
+                    {post.data.title}
+                  </a>
+                ))
+              }
+            </div>
+            <div class="dropdown-section">
+              <h3>DeepSeek</h3>
+              {
+                deepSeekMathPosts.map((post) => (
+                  <a
+                    href={`/documentacion/deepseek/${post.slug}`}
+                    class="dropdown-item"
+                  >
+                    {post.data.title}
+                  </a>
+                ))
+              }
+            </div>
+            <div class="dropdown-section">
+              <h3>Mathstral</h3>
+              {
+                mathstralPosts.map((post) => (
+                  <a
+                    href={`/documentacion/mathstral/${post.slug}`}
+                    class="dropdown-item"
+                  >
+                    {post.data.title}
+                  </a>
+                ))
+              }
+            </div>
+          </div>
+        </div>
+        <a href="/documentacion" class="nav-link">Documentación </a>
+      </div>
+    </nav>
+  </div>
+</header>
+
+<style>
+  :root {
+    --color-bg: #030303;
+    --color-text: #ffffff;
+    --color-text-muted: #d1d1d1;
+    --color-accent: #e5c1ff;
+    --color-accent-dark: #b985ff;
+    --color-surface: rgba(255, 255, 255, 0.05);
+    --color-surface-hover: rgba(255, 255, 255, 0.08);
+    --font-display: "Italiana", serif;
+    --font-body: "Inter", sans-serif;
+  }
+
+  .header {
+    position: fixed;
+    top: 0;
+    width: 100%;
+    height: 72px;
+    z-index: 100;
+    transition: all 0.3s ease;
+    display: flex;
+    justify-content: center;
+    background-color: transparent;
+  }
+
+  .container {
+    max-width: 1400px;
+    width: 100%;
+    margin: 0 auto;
+    height: 100%;
+    display: flex;
+    align-items: center;
+    padding: 0 1.5rem;
+    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+  }
+
+  .header.scrolled .container {
+    margin: 1rem auto;
+    width: 90%;
+    background-color: rgba(3, 3, 3, 0.8);
+    border-radius: 1rem;
+    box-shadow: 0 0px 10px rgba(0, 0, 0, 0.3);
+    border: 1px solid rgba(255, 255, 255, 0.1);
+  }
+
+  .logo {
+    flex-shrink: 0;
+  }
+
+  .logo a {
+    font-family: var(--font-display);
+    font-size: 1.5rem;
+    font-weight: 400;
+    color: var(--color-text);
+    text-decoration: none;
+    transition: color 0.2s ease;
+    letter-spacing: -0.02em;
+  }
+
+  .logo a:hover {
+    color: var(--color-accent);
+    text-shadow: 0 0 30px rgba(229, 193, 255, 0.3);
+  }
+
+  .main-nav {
+    display: flex;
+    align-items: center;
+    flex: 1;
+    justify-content: space-between;
+    width: 100%;
+  }
+
+  .nav-links {
+    display: flex;
+    gap: 1.5rem;
+    align-items: center;
+  }
+
+  .nav-link {
+    color: var(--color-text-muted);
+    text-decoration: none;
+    font-family: var(--font-body);
+    font-size: 1rem;
+    font-weight: 400;
+    padding: 0.5rem 0;
+    position: relative;
+    transition: all 0.3s ease;
+  }
+
+  .nav-link:hover {
+    color: var(--color-accent);
+  }
+
+  .nav-link::after {
+    content: "";
+    position: absolute;
+    bottom: 0;
+    left: 0;
+    width: 0;
+    height: 2px;
+    background-color: var(--color-accent);
+    transition: width 0.3s ease;
+  }
+
+  .nav-link:hover::after {
+    width: 100%;
+  }
+
+  .social-links {
+    display: flex;
+    gap: 1rem;
+    flex-shrink: 0;
+  }
+
+  .social-links a {
+    color: var(--color-text-muted);
+    transition: all 0.3s ease;
+    padding: 0.5rem;
+    border-radius: 50%;
+    background: var(--color-surface);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }
+
+  .social-links a:hover {
+    color: var(--color-accent);
+    background: var(--color-surface-hover);
+    transform: translateY(-2px);
+  }
+
+  .menu-toggle {
+    display: none;
+    background: none;
+    border: none;
+    cursor: pointer;
+    padding: 0.5rem;
+    position: relative;
+    z-index: 110;
+  }
+
+  .hamburger {
+    display: block;
+    position: relative;
+    width: 24px;
+    height: 2px;
+    background-color: var(--color-text);
+    transition: all 0.3s ease-in-out;
+  }
+
+  .hamburger::before,
+  .hamburger::after {
+    content: "";
+    position: absolute;
+    left: 0;
+    width: 24px;
+    height: 2px;
+    background-color: var (--color-text);
+    transition: all 0.3s ease-in-out;
+  }
+
+  .hamburger::before {
+    top: -8px;
+  }
+
+  .hamburger::after {
+    top: 8px;
+  }
+
+  body.menu-open .hamburger {
+    background-color: transparent;
+  }
+
+  body.menu-open .hamburger::before {
+    top: 0;
+    transform: rotate(45deg);
+  }
+
+  body.menu-open .hamburger::after {
+    top: 0;
+    transform: rotate(-45deg);
+  }
+
+  @media (max-width: 768px) {
+    .header {
+      background-color: transparent;
+      box-shadow: none;
+      transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+      height: 60px;
+    }
+
+    .container {
+      padding: 0 1rem;
+      position: relative;
+      background: transparent;
+      box-shadow: none;
+      margin: 0.5rem 1rem;
+      max-width: 100%;
+      transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+    }
+
+    .header.scrolled {
+      background-color: transparent;
+    }
+
+    .header.scrolled .container {
+      margin: 0.5rem 1rem;
+      width: calc(100% - 2rem);
+      transform: none;
+      transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+    }
+
+    .main-nav {
+      position: relative;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      width: 100%;
+    }
+
+    .menu-toggle {
+      display: block;
+      background: none;
+      border: none;
+      cursor: pointer;
+      padding: 0.5rem;
+      position: relative;
+      z-index: 101;
+    }
+
+    .hamburger {
+      display: block;
+      position: relative;
+      width: 24px;
+      height: 2px;
+      background-color: var(--color-text);
+      transition: all 0.3s ease-in-out;
+    }
+
+    .hamburger::before,
+    .hamburger::after {
+      content: "";
+      position: absolute;
+      left: 0;
+      width: 24px;
+      height: 2px;
+      background-color: var(--color-text);
+      transition: all 0.3s ease-in-out;
+    }
+
+    .hamburger::before {
+      top: -8px;
+    }
+
+    .hamburger::after {
+      top: 8px;
+    }
+
+    body.menu-open .hamburger {
+      background-color: transparent;
+    }
+
+    body.menu-open .hamburger::before {
+      top: 0;
+      transform: rotate(45deg);
+    }
+
+    body.menu-open .hamburger::after {
+      top: 0;
+      transform: rotate(-45deg);
+    }
+
+    .logo {
+      position: relative;
+      z-index: 101;
+    }
+
+    .nav-links {
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100vh;
+      background-color: var(--color-bg);
+      padding: 6rem 2rem;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: flex-start;
+      gap: 2.5rem;
+      z-index: 99;
+      transform: translateY(-100%);
+      transition: transform 0.5s cubic-bezier(0.4, 0, 0.2, 1);
+    }
+
+    .nav-links.active {
+      transform: translateY(0);
+    }
+
+    .nav-link {
+      font-size: 1.5rem;
+      text-align: center;
+      opacity: 0;
+      transform: translateY(-20px);
+      transition: all 0.3s ease-in-out;
+      color: var(--color-text);
+      font-weight: 400;
+      width: 100%;
+      padding: 1rem;
+    }
+
+    .nav-links.active .nav-link {
+      opacity: 1;
+      transform: translateY(0);
+      transition-delay: 0.4s;
+    }
+
+    .nav-link:hover {
+      color: var(--color-accent);
+      background-color: var(--color-surface);
+      border-radius: 8px;
+    }
+
+    .social-links {
+      position: fixed;
+      bottom: 3rem;
+      left: 0;
+      width: 100%;
+      display: flex;
+      justify-content: center;
+      gap: 2.5rem;
+      z-index: 99;
+      opacity: 0;
+      transform: translateY(20px);
+      transition: all 0.3s ease-in-out;
+      padding: 0 2rem;
+    }
+
+    .nav-links.active ~ .social-links {
+      opacity: 1;
+      transform: translateY(0);
+      transition-delay: 0.5s;
+    }
+
+    .nav-links:not(.active) ~ .social-links {
+      transition-delay: 0s;
+      transform: translateY(100%);
+    }
+
+    .nav-links:not(.active) .nav-link {
+      transition-delay: 0s;
+      transform: translateY(100%);
+    }
+
+    .social-links a {
+      color: var(--color-text-muted);
+      padding: 0.75rem;
+      background-color: var(--color-surface);
+      border-radius: 50%;
+      transition: all 0.3s ease;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+
+    .social-links a:hover {
+      color: var(--color-accent);
+      background-color: var(--color-surface-hover);
+      transform: translateY(-2px);
+    }
+
+    body.menu-open {
+      overflow: hidden;
+    }
+
+    .nav-dropdown {
+      width: 100%;
+    }
+
+    .dropdown-content {
+      display: none;
+    }
+  }
+
+  @media (min-width: 769px) {
+    .nav-dropdown {
+      position: relative;
+      text-align: center;
+    }
+
+    .dropdown-content {
+      position: absolute;
+      top: 100%;
+      left: 0;
+      background: rgba(3, 3, 3, 0.98);
+      border: 1px solid rgba(255, 255, 255, 0.1);
+      border-radius: 12px;
+      padding: 1.5rem;
+      min-width: 280px;
+      opacity: 0;
+      visibility: hidden;
+      transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+      box-shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.3);
+      backdrop-filter: blur(12px);
+      z-index: 1000;
+      transform: translateY(10px);
+    }
+
+    .nav-dropdown:hover .dropdown-content {
+      opacity: 1;
+      visibility: visible;
+      transform: translateY(0);
+      text-align: center;
+    }
+
+    .dropdown-section {
+      padding: 0.5rem 0;
+    }
+
+    .dropdown-section:not(:last-child) {
+      border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+      margin-bottom: 1rem;
+      padding-bottom: 1rem;
+    }
+
+    .dropdown-section h3 {
+      font-family: var(--font-body);
+      font-size: 0.85rem;
+      color: var(--color-accent);
+      margin: 0 0 1rem;
+      padding: 0 0.5rem;
+      text-transform: uppercase;
+      text-align: left;
+      letter-spacing: 1px;
+      font-weight: 600;
+    }
+
+    .dropdown-item {
+      display: flex;
+      align-items: center;
+      padding: 0.75rem 1rem;
+      color: var(--color-text-muted);
+      text-decoration: none;
+      font-family: var(--font-body);
+      font-size: 0.95rem;
+      border-radius: 8px;
+      transition: all 0.2s ease;
+      cursor: pointer;
+      margin: 0.25rem 0;
+    }
+
+    .dropdown-item:hover {
+      color: var(--color-accent);
+      background: rgba(255, 255, 255, 0.05);
+      transform: translateX(4px);
+    }
+  }
+</style>
+
+<script>
+  document.addEventListener("DOMContentLoaded", () => {
+    const header = document.querySelector(".header");
+    const menuToggle = document.getElementById("menu-toggle");
+    const navLinks = document.querySelector(".nav-links");
+    const body = document.body;
+
+    function handleScroll() {
+      if (window.scrollY > 100) {
+        header?.classList.add("scrolled");
+      } else {
+        header?.classList.remove("scrolled");
+      }
+    }
+
+    window.addEventListener("scroll", handleScroll);
+
+    function toggleMenu() {
+      navLinks?.classList.toggle("active");
+      body.classList.toggle("menu-open");
+    }
+
+    menuToggle?.addEventListener("click", toggleMenu);
+
+    const links = document.querySelectorAll(".nav-link");
+    links.forEach((link) => {
+      link.addEventListener("click", () => {
+        if (navLinks?.classList.contains("active")) {
+          toggleMenu();
+        }
+      });
+    });
+
+    const currentPath = window.location.pathname;
+    links.forEach((link) => {
+      const href = link.getAttribute("href");
+      if (
+        href === currentPath ||
+        (href !== "/" && href !== null && currentPath.startsWith(href))
+      ) {
+        link.classList.add("active");
+      }
+    });
+  });
+</script>

@@ -1,0 +1,58 @@
+---
+const today = new Date();
+---
+
+<footer class="footer">
+  <div class="container">
+    <div class="footer-content">
+      <p class="project-name">Pruebas de Modelos de IA Matemáticos</p>
+      <p class="course-info">Laboratorio de Cálculo | {today.getFullYear()}</p>
+    </div>
+  </div>
+</footer>
+
+<style>
+  .footer {
+    padding: 1.5rem 0;
+    background-color: var(--color-bg);
+    border-top: 1px solid rgba(255, 255, 255, 0.1);
+    color: var(--color-text-muted);
+  }
+
+  .container {
+    max-width: 1100px;
+    margin: 0 auto;
+    padding: 0 1.5rem;
+  }
+
+  .footer-content {
+    text-align: center;
+    padding: 1rem 0;
+  }
+
+  .project-name {
+    font-size: 1rem;
+    margin-bottom: 0.5rem;
+    font-weight: 500;
+    color: var(--color-text);
+  }
+
+  .course-info {
+    font-size: 0.9rem;
+    opacity: 0.8;
+  }
+
+  @media (max-width: 768px) {
+    .footer {
+      padding: 1rem 0;
+    }
+
+    .project-name {
+      font-size: 0.9rem;
+    }
+
+    .course-info {
+      font-size: 0.8rem;
+    }
+  }
+</style>

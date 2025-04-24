@@ -1,0 +1,352 @@
+---
+import BaseHead from "../components/BaseHead.astro";
+import Header from "../components/Header.astro";
+import Footer from "../components/Footer.astro";
+import { SITE_TITLE } from "../consts";
+
+interface Props {
+  title: string;
+  description: string;
+}
+
+const {
+  title,
+  description = "Explora la documentación e investigación de los modelos.",
+} = Astro.props;
+---
+
+<!doctype html>
+<html lang="es">
+  <head>
+    <BaseHead title={`${title} | ${SITE_TITLE}`} description={description} />
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Italiana&family=Inter:wght@300;400;500&display=swap"
+      rel="stylesheet"
+    />
+  </head>
+  <body>
+    <Header />
+
+    <div class="category-page">
+      <div class="hero-section">
+        <div class="hero-gradient" aria-hidden="true"></div>
+        <div class="grid-background" aria-hidden="true"></div>
+        <div class="noise" aria-hidden="true"></div>
+        <div class="grain" aria-hidden="true"></div>
+        <div class="container">
+          <div class="hero-content">
+            <div class="hero-main">
+              <div class="hero-title-container">
+                <h1 class="hero-title">
+                  <span class="title-line">
+                    <span class="text-reveal">{title}</span>
+                  </span>
+                </h1>
+                {
+                  description && (
+                    <p class="hero-description">
+                      <span class="text-reveal">{description}</span>
+                    </p>
+                  )
+                }
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <main class="main-content">
+        <slot />
+      </main>
+    </div>
+
+    <Footer />
+
+    <style>
+      @keyframes noise {
+        0% {
+          transform: translate(0, 0);
+        }
+        10% {
+          transform: translate(-5%, -5%);
+        }
+        20% {
+          transform: translate(-10%, 5%);
+        }
+        30% {
+          transform: translate(5%, -10%);
+        }
+        40% {
+          transform: translate(-5%, 15%);
+        }
+        50% {
+          transform: translate(-10%, 5%);
+        }
+        60% {
+          transform: translate(15%, 0);
+        }
+        70% {
+          transform: translate(0, 10%);
+        }
+        80% {
+          transform: translate(-15%, 0);
+        }
+        90% {
+          transform: translate(10%, 5%);
+        }
+        100% {
+          transform: translate(5%, 0);
+        }
+      }
+
+      @keyframes grain {
+        0%,
+        100% {
+          transform: translate(0, 0);
+        }
+        10% {
+          transform: translate(-2%, -2%);
+        }
+        20% {
+          transform: translate(-4%, 4%);
+        }
+        30% {
+          transform: translate(4%, -4%);
+        }
+        40% {
+          transform: translate(-4%, 2%);
+        }
+        50% {
+          transform: translate(2%, -2%);
+        }
+        60% {
+          transform: translate(4%, 4%);
+        }
+        70% {
+          transform: translate(2%, -4%);
+        }
+        80% {
+          transform: translate(-2%, 2%);
+        }
+        90% {
+          transform: translate(2%, 4%);
+        }
+      }
+
+      @keyframes revealText {
+        from {
+          clip-path: inset(0 100% 0 0);
+        }
+        to {
+          clip-path: inset(0 0 0 0);
+        }
+      }
+
+      :root {
+        --color-bg: #030303;
+        --color-text: #ffffff;
+        --color-text-muted: #d1d1d1;
+        --color-accent: #e5c1ff;
+        --color-accent-dark: #b985ff;
+        --color-surface: rgba(255, 255, 255, 0.05);
+        --color-surface-hover: rgba(255, 255, 255, 0.08);
+        --color-border: rgba(255, 255, 255, 0.1);
+        --font-display: "Italiana", serif;
+        --font-body: "Inter", sans-serif;
+      }
+
+      .category-page {
+        min-height: 100vh;
+        background: var(--color-bg);
+        color: var(--color-text);
+        position: relative;
+      }
+
+      .hero-section {
+        position: relative;
+        min-height: 60vh;
+        background: var(--color-bg);
+        padding: 2rem;
+        overflow: hidden;
+        isolation: isolate;
+        display: flex;
+        align-items: center;
+      }
+
+      .hero-gradient {
+        position: absolute;
+        inset: 0;
+        z-index: 1;
+        opacity: 0.5;
+        background: radial-gradient(
+            circle at 0% 0%,
+            rgba(229, 193, 255, 0.15) 0%,
+            transparent 50%
+          ),
+          radial-gradient(
+            circle at 100% 0%,
+            rgba(255, 184, 0, 0.15) 0%,
+            transparent 50%
+          ),
+          radial-gradient(
+            circle at 50% 100%,
+            rgba(255, 107, 77, 0.15) 0%,
+            transparent 50%
+          );
+        filter: blur(80px);
+        pointer-events: none;
+      }
+
+      .grid-background {
+        position: absolute;
+        top: 0;
+        left: 0;
+        right: 0;
+        height: 70vh;
+        background-image: linear-gradient(
+            rgba(255, 255, 255, 0.03) 1px,
+            transparent 1px
+          ),
+          linear-gradient(90deg, rgba(255, 255, 255, 0.03) 1px, transparent 1px);
+        background-size: 30px 30px;
+        mask-image: linear-gradient(
+          to bottom,
+          rgba(0, 0, 0, 1) 0%,
+          rgba(0, 0, 0, 0.8) 30%,
+          rgba(0, 0, 0, 0.5) 60%,
+          transparent 100%
+        );
+        opacity: 0.7;
+        z-index: 0;
+      }
+
+      .noise {
+        position: fixed;
+        top: -50%;
+        left: -50%;
+        right: -50%;
+        bottom: -50%;
+        width: 200%;
+        height: 200%;
+        background: transparent
+          url("data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAADIAAAAyAQMAAAAk8RryAAAABlBMVEUAAAAAAAClZ7nPAAAAAnRSTlMAGovxNEIAAAAOSURBVBjTY2AYBYMJAAABkAABGHQmMwAAAABJRU5ErkJggg==")
+          repeat 0 0;
+        background-repeat: repeat;
+        animation: noise 0.2s infinite;
+        opacity: 0.02;
+        z-index: 1;
+        pointer-events: none;
+      }
+
+      .grain {
+        position: fixed;
+        top: -150%;
+        left: -50%;
+        width: 300%;
+        height: 300%;
+        pointer-events: none;
+        background-image: url("/grain.png");
+        background-size: 200px;
+        background-repeat: repeat;
+        animation: grain 8s steps(10) infinite;
+        opacity: 0.15;
+        z-index: 2;
+      }
+
+      .container {
+        width: 100%;
+        max-width: 1400px;
+        margin: 0 auto;
+        position: relative;
+        z-index: 2;
+      }
+
+      .hero-content {
+        display: flex;
+        flex-direction: column;
+        gap: 2rem;
+        position: relative;
+        z-index: 3;
+        width: 100%;
+      }
+
+      .hero-main {
+        display: grid;
+        grid-template-columns: 1fr;
+        gap: 4rem;
+        align-items: center;
+        position: relative;
+      }
+
+      .hero-title-container {
+        position: relative;
+        max-width: 800px;
+        margin: 0 auto;
+        text-align: center;
+      }
+
+      .hero-title {
+        font-family: var(--font-display);
+        font-size: clamp(4rem, 8vw, 7rem);
+        line-height: 1;
+        font-weight: 400;
+        margin: 0;
+        letter-spacing: -0.02em;
+      }
+
+      .title-line {
+        overflow: hidden;
+        margin-bottom: 0.5rem;
+      }
+
+      .title-line span {
+        display: inline-block;
+        transform-origin: left;
+        color: var(--color-text);
+        text-shadow: 0 0 40px rgba(255, 255, 255, 0.1);
+      }
+
+      .hero-description {
+        font-family: var(--font-body);
+        font-size: clamp(1.2rem, 2vw, 1.5rem);
+        line-height: 1.6;
+        color: var(--color-text-muted);
+        margin: 2rem 0 0;
+        max-width: 600px;
+        margin-left: auto;
+        margin-right: auto;
+      }
+
+      .main-content {
+        position: relative;
+        z-index: 2;
+        padding: 4rem 0;
+        display: flex;
+        align-items: center;
+        justify-content: flex-start;
+      }
+
+      @media (max-width: 768px) {
+        .hero-section {
+          min-height: 50vh;
+          padding: 4rem 1rem;
+        }
+
+        .hero-title {
+          font-size: clamp(2.5rem, 8vw, 3.5rem);
+        }
+
+        .hero-description {
+          font-size: clamp(1rem, 2vw, 1.2rem);
+          margin: 1.5rem 0 0;
+        }
+
+        .main-content {
+          padding: 2rem 0;
+        }
+      }
+    </style>
+  </body>
+</html>

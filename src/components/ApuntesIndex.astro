@@ -1,0 +1,874 @@
+---
+import BaseHead from "./BaseHead.astro";
+import Header from "./Header.astro";
+import Footer from "./Footer.astro";
+import { getCollection } from "astro:content";
+import type { CollectionEntry } from "astro:content";
+
+// Obtener todas las colecciones
+const deepSeekMathPosts = await getCollection("deepseek");
+const llamaPost = await getCollection("llama");
+const qwenPosts = await getCollection("qwen");
+const generalPosts = await getCollection("general");
+const mathstralPosts = await getCollection("mathstral");
+
+// Preparar datos para el sidebar
+const categories = [
+  {
+    id: "deepseek",
+    title: "DeepSeek",
+    icon: "ph-calculator",
+    color: "#7B61FF",
+    gradient: "linear-gradient(135deg, #7B61FF 0%, #9B8AFF 100%)",
+    count: deepSeekMathPosts.length,
+    posts: deepSeekMathPosts,
+  },
+  {
+    id: "llama",
+    title: "Llama 3",
+    icon: "ph-cpu",
+    color: "#FF4D4D",
+    gradient: "linear-gradient(135deg, #FF4D4D 0%, #FF7A7A 100%)",
+    count: llamaPost.length,
+    posts: llamaPost,
+  },
+  {
+    id: "qwen",
+    title: "Qwen",
+    icon: "ph-code",
+    color: "#00B8D4",
+    gradient: "linear-gradient(135deg, #00B8D4 0%, #00E5FF 100%)",
+    count: qwenPosts.length,
+    posts: qwenPosts,
+  },
+  {
+    id: "mathstral",
+    title: "Mathstral",
+    icon: "ph-translate",
+    color: "#FFB800",
+    gradient: "linear-gradient(135deg, #FFB800 0%, #FFD233 100%)",
+    count: mathstralPosts.length,
+    posts: mathstralPosts,
+  },
+  {
+    id: "general",
+    title: "General",
+    icon: "ph-bookmark",
+    color: "#2AC769",
+    gradient: "linear-gradient(135deg, #2AC769 0%, #4AE88A 100%)",
+    count: generalPosts.length,
+    posts: generalPosts,
+  },
+];
+---
+
+<!doctype html>
+<html lang="es">
+  <head>
+    <BaseHead
+      title="Apuntes"
+      description="Colección de apuntes y recursos educativos"
+    />
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap"
+      rel="stylesheet"
+    />
+    <script src="https://unpkg.com/@phosphor-icons/web"></script>
+  </head>
+  <body>
+    <Header />
+
+    <main class="post-layout">
+      <div class="gradient-bg"></div>
+      <div class="container">
+        <div class="layout-grid">
+          <!-- Sidebar -->
+          <aside class="sidebar">
+            <div class="sidebar-header">
+              <h3 class="sidebar-title">Explorar</h3>
+            </div>
+            <nav class="sidebar-nav">
+              {
+                categories.map((category) => (
+                  <a
+                    href={`#${category.id}`}
+                    class="sidebar-item"
+                    style={`--category-color: ${category.color}`}
+                  >
+                    <i class={`ph ${category.icon}`} />
+                    <span class="sidebar-text">{category.title}</span>
+                    <span class="sidebar-count">{category.count}</span>
+                  </a>
+                ))
+              }
+            </nav>
+            <div class="sidebar-footer">
+              <div class="stats-card">
+                <h3>Resumen</h3>
+                <div class="stats-grid">
+                  <div class="stat-item">
+                    <i class="ph-book"></i>
+                    <span class="stat-value"
+                      >{
+                        categories.reduce((acc, cat) => acc + cat.count, 0)
+                      }</span
+                    >
+                    <span class="stat-label">Total Posts</span>
+                  </div>
+                  <div class="stat-item">
+                    <i class="ph-folders"></i>
+                    <span class="stat-value">{categories.length}</span>
+                    <span class="stat-label">Categorías</span>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </aside>
+
+          <!-- Main Content -->
+          <div class="main-content">
+            <article>
+              <div class="sections-grid">
+                {
+                  categories.map((category, index) => (
+                    <>
+                      <section
+                        id={category.id}
+                        class="section-card"
+                        style={`--category-gradient: ${category.gradient}`}
+                      >
+                        <div class="section-header">
+                          <div class="section-title-container">
+                            <h3 class="section-title">{category.title}</h3>
+                          </div>
+                          <span class="section-count">
+                            {category.count} posts
+                          </span>
+                        </div>
+                        <div class="posts-grid">
+                          {category.posts.length > 0 ? (
+                            category.posts.map((post) => (
+                              <a
+                                href={`/documentacion/${category.id}/${post.slug}`}
+                                class="post-card"
+                                style={`--category-color: ${category.color}; --category-gradient: ${category.gradient}`}
+                              >
+                                <div class="post-card-header">
+                                  <h3 class="post-card-title">
+                                    {post.data.title}
+                                  </h3>
+                                  <span class="post-date">
+                                    <i class="ph-calendar" />
+                                    {new Date(
+                                      post.data.pubDate
+                                    ).toLocaleDateString("es-ES", {
+                                      year: "numeric",
+                                      month: "short",
+                                      day: "numeric",
+                                      timeZone: "UTC",
+                                    })}
+                                  </span>
+                                </div>
+                                <p class="post-card-description">
+                                  {post.data.description}
+                                </p>
+                              </a>
+                            ))
+                          ) : (
+                            <div class="no-posts-message">
+                              <i class="ph-note-pencil" />
+                              <h3>Aún no hay posts cargados</h3>
+                              <p>Pronto publicaremos nuevo contenido</p>
+                            </div>
+                          )}
+                        </div>
+                      </section>
+                      {index < categories.length - 1 && (
+                        <hr class="section-divider" />
+                      )}
+                    </>
+                  ))
+                }
+              </div>
+            </article>
+          </div>
+        </div>
+      </div>
+    </main>
+
+    <Footer />
+
+    <script>
+      const searchInput = document.getElementById("searchInput");
+      const sections = document.querySelectorAll(".section-card");
+      const noResultsMessage = document.createElement("div");
+      noResultsMessage.className = "no-results";
+      noResultsMessage.innerHTML = `
+        <i class="ph-magnifying-glass"></i>
+        <h3>No se encontraron resultados</h3>
+        <p>Intenta con otros términos de búsqueda</p>
+      `;
+
+      if (searchInput) {
+        searchInput.addEventListener("input", (e) => {
+          const target = e.target as HTMLInputElement;
+          const searchTerm = target.value.toLowerCase();
+          let hasResults = false;
+
+          sections.forEach((section) => {
+            const sectionCards = section.querySelectorAll(".post-card");
+            let sectionHasResults = false;
+
+            sectionCards.forEach((card) => {
+              const titleElement = card.querySelector(".post-card-title");
+              const descriptionElement = card.querySelector(
+                ".post-card-description"
+              );
+
+              if (titleElement && descriptionElement) {
+                const title = titleElement.textContent?.toLowerCase() || "";
+                const description =
+                  descriptionElement.textContent?.toLowerCase() || "";
+
+                const matches =
+                  title.includes(searchTerm) ||
+                  description.includes(searchTerm);
+                (card as HTMLElement).style.display = matches
+                  ? "block"
+                  : "none";
+
+                if (matches) {
+                  sectionHasResults = true;
+                  hasResults = true;
+                }
+              }
+            });
+
+            (section as HTMLElement).style.display = sectionHasResults
+              ? "block"
+              : "none";
+          });
+
+          const mainContent = document.querySelector(".main-content");
+          if (mainContent) {
+            if (!hasResults && searchTerm) {
+              if (!document.querySelector(".no-results")) {
+                mainContent.appendChild(noResultsMessage);
+              }
+            } else {
+              const existingNoResults = document.querySelector(".no-results");
+              if (existingNoResults) {
+                existingNoResults.remove();
+              }
+            }
+          }
+        });
+      }
+
+      const sidebarItems = document.querySelectorAll(".sidebar-item");
+
+      sidebarItems.forEach((item) => {
+        item.addEventListener("click", (e) => {
+          e.preventDefault();
+          const href = item.getAttribute("href");
+          if (href) {
+            const targetId = href.substring(1);
+            const targetSection = document.getElementById(targetId);
+
+            if (targetSection) {
+              targetSection.scrollIntoView({ behavior: "smooth" });
+            }
+          }
+        });
+      });
+    </script>
+
+    <style>
+      :root {
+        --color-bg: #030303;
+        --color-text: #ffffff;
+        --color-text-muted: #d1d1d1;
+        --color-accent: #e5c1ff;
+        --color-accent-dark: #b985ff;
+        --color-surface: rgba(255, 255, 255, 0.05);
+        --color-surface-hover: rgba(255, 255, 255, 0.08);
+        --color-border: rgba(255, 255, 255, 0.1);
+        --font-body: "Inter", sans-serif;
+        --radius-sm: 8px;
+        --radius-md: 12px;
+        --radius-lg: 16px;
+        --shadow-sm: 0 1px 2px rgba(0, 0, 0, 0.2);
+        --shadow-md: 0 4px 6px rgba(0, 0, 0, 0.3);
+        --shadow-lg: 0 10px 15px rgba(0, 0, 0, 0.4);
+      }
+
+      .post-layout {
+        min-height: 100vh;
+        background: var(--color-bg);
+        color: var(--color-text);
+        position: relative;
+        padding: 4rem 0;
+      }
+
+      .gradient-bg {
+        position: absolute;
+        inset: 0;
+        z-index: 1;
+        opacity: 0.5;
+        background: radial-gradient(
+            circle at 20% 20%,
+            rgba(229, 193, 255, 0.15) 0%,
+            transparent 70%
+          ),
+          radial-gradient(
+            circle at 80% 50%,
+            rgba(255, 184, 0, 0.15) 0%,
+            transparent 70%
+          ),
+          radial-gradient(
+            circle at 40% 80%,
+            rgba(255, 107, 77, 0.15) 0%,
+            transparent 70%
+          );
+        filter: blur(80px);
+        pointer-events: none;
+      }
+
+      .container {
+        max-width: 1400px;
+        margin: 0 auto;
+        padding: 0 2rem;
+        position: relative;
+        z-index: 2;
+      }
+
+      .layout-grid {
+        display: grid;
+        grid-template-columns: 300px 1fr;
+        gap: 2rem;
+      }
+
+      /* Sidebar Styles */
+      .sidebar {
+        background: var(--color-surface);
+        border-radius: var(--radius-lg);
+        padding: 2rem;
+        height: fit-content;
+        position: sticky;
+        top: 2rem;
+        backdrop-filter: blur(10px);
+        border: 1px solid var(--color-border);
+        box-shadow: var(--shadow-md);
+      }
+
+      .sidebar-header {
+        margin-bottom: 2rem;
+      }
+
+      .sidebar-title {
+        font-family: var(--font-body);
+        font-size: 1.25rem;
+        font-weight: 600;
+        margin: 0;
+        color: var(--color-text);
+      }
+
+      .sidebar-nav {
+        display: flex;
+        flex-direction: column;
+        gap: 0.5rem;
+        margin-bottom: 2rem;
+      }
+
+      .sidebar-item {
+        display: flex;
+        align-items: center;
+        gap: 1rem;
+        padding: 0.75rem 1rem;
+        border-radius: var(--radius-sm);
+        text-decoration: none;
+        color: var(--color-text);
+        transition: all 0.2s ease;
+        position: relative;
+        overflow: hidden;
+        background: var(--color-surface-hover);
+      }
+
+      .sidebar-item::before {
+        content: "";
+        position: absolute;
+        left: 0;
+        top: 0;
+        height: 100%;
+        width: 3px;
+        background: var(--category-color);
+        opacity: 0;
+        transition: opacity 0.2s ease;
+      }
+
+      .sidebar-item:hover {
+        background: var(--color-surface);
+        transform: translateX(4px);
+      }
+
+      .sidebar-item:hover::before {
+        opacity: 1;
+      }
+
+      .sidebar-item i {
+        color: var(--category-color);
+        font-size: 1.25rem;
+        width: 24px;
+        text-align: center;
+      }
+
+      .sidebar-text {
+        flex: 1;
+        font-family: var(--font-body);
+        font-weight: 500;
+        font-size: 0.9rem;
+      }
+
+      .sidebar-count {
+        background: var(--color-surface);
+        padding: 0.25rem 0.5rem;
+        border-radius: var(--radius-sm);
+        font-size: 0.75rem;
+        color: var(--color-text-muted);
+      }
+
+      .sidebar-footer {
+        border-top: 1px solid var(--color-border);
+        padding-top: 1.5rem;
+      }
+
+      .stats-card {
+        background: var(--color-surface-hover);
+        border-radius: var(--radius-md);
+        padding: 1rem;
+        box-shadow: var(--shadow-sm);
+      }
+
+      .stats-card h3 {
+        font-family: var(--font-body);
+        font-size: 0.9rem;
+        font-weight: 600;
+        margin: 0 0 1rem;
+        color: var(--color-text);
+      }
+
+      .stats-grid {
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+        gap: 0.75rem;
+      }
+
+      .stat-item {
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        gap: 0.25rem;
+        background: var(--color-surface);
+        padding: 0.75rem;
+        border-radius: var(--radius-sm);
+      }
+
+      .stat-item i {
+        font-size: 1.25rem;
+        color: var(--color-accent);
+      }
+
+      .stat-value {
+        display: block;
+        font-family: var(--font-body);
+        font-size: 1.25rem;
+        font-weight: 600;
+        color: var(--color-text);
+      }
+
+      .stat-label {
+        font-size: 0.75rem;
+        color: var(--color-text-muted);
+      }
+
+      /* Main Content Styles */
+      .main-content {
+        display: flex;
+        flex-direction: column;
+        gap: 2rem;
+      }
+
+      .search-section {
+        background: var(--color-surface);
+        border-radius: var(--radius-lg);
+        padding: 1.5rem;
+        margin-bottom: 2rem;
+        backdrop-filter: blur(10px);
+        border: 1px solid var(--color-border);
+        box-shadow: var(--shadow-md);
+      }
+
+      .search-container {
+        display: flex;
+        align-items: center;
+        gap: 1rem;
+        background: var(--color-surface-hover);
+        border-radius: var(--radius-md);
+        padding: 0.75rem 1rem;
+        border: 1px solid var(--color-border);
+      }
+
+      .search-icon {
+        color: var(--color-text-muted);
+        font-size: 1.25rem;
+      }
+
+      .search-input {
+        flex: 1;
+        background: transparent;
+        border: none;
+        color: var(--color-text);
+        font-family: var(--font-body);
+        font-size: 1rem;
+        padding: 0.5rem 0;
+      }
+
+      .search-input:focus {
+        outline: none;
+      }
+
+      .search-input::placeholder {
+        color: var(--color-text-muted);
+      }
+
+      .search-button {
+        background: var(--color-accent);
+        border: none;
+        border-radius: var(--radius-sm);
+        padding: 0.75rem;
+        cursor: pointer;
+        transition: all 0.2s ease;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+      }
+
+      .search-button i {
+        color: var(--color-text);
+        font-size: 1rem;
+      }
+
+      .search-button:hover {
+        background: var(--color-accent-dark);
+        transform: translateX(2px);
+      }
+
+      .post-content {
+        background: var(--color-surface);
+        border: 1px solid var(--color-border);
+        border-radius: var(--radius-lg);
+        padding: 3rem;
+        backdrop-filter: blur(10px);
+        box-shadow: var(--shadow-md);
+      }
+
+      .post-header {
+        margin-bottom: 3rem;
+        text-align: center;
+      }
+
+      .post-title {
+        font-family: var(--font-body);
+        font-size: 2.5rem;
+        font-weight: 700;
+        line-height: 1.2;
+        margin: 0 0 1.5rem;
+        color: var(--color-text);
+      }
+
+      .post-description {
+        font-size: 1.2rem;
+        line-height: 1.6;
+        color: var(--color-text-muted);
+        margin: 0;
+      }
+
+      .sections-grid {
+        display: grid;
+        gap: 3rem;
+      }
+
+      .section-card {
+        position: relative;
+        overflow: hidden;
+        background: var(--color-surface);
+        border-radius: var(--radius-lg);
+        padding: 2rem;
+        border: 1px solid var(--color-border);
+        box-shadow: var(--shadow-md);
+      }
+
+      .section-card::before {
+        content: "";
+        position: absolute;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 4px;
+        background: var(--category-gradient);
+      }
+
+      .section-header {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        margin-bottom: 2rem;
+      }
+
+      .section-title-container {
+        display: flex;
+        align-items: center;
+        gap: 1rem;
+      }
+
+      .section-title-container i {
+        font-size: 1.5rem;
+        color: var(--category-color);
+      }
+
+      .section-title {
+        font-family: var(--font-body);
+        font-size: 1.75rem;
+        font-weight: 600;
+        margin: 0;
+        color: var(--color-text);
+      }
+
+      .section-count {
+        font-size: 0.875rem;
+        color: var(--color-text-muted);
+      }
+
+      .posts-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+        gap: 1.5rem;
+      }
+
+      .post-card {
+        position: relative;
+        overflow: hidden;
+        background: var(--color-surface-hover);
+        border-radius: var(--radius-md);
+        padding: 1.5rem;
+        text-decoration: none;
+        transition: all 0.2s ease;
+        border: 1px solid var(--color-border);
+        box-shadow: var(--shadow-sm);
+      }
+
+      .post-card::before {
+        content: "";
+        position: absolute;
+        top: 0;
+        left: 0;
+        width: 4px;
+        height: 100%;
+        background: var(--category-gradient);
+        opacity: 0;
+        transition: opacity 0.2s ease;
+      }
+
+      .post-card::after {
+        content: "";
+        position: absolute;
+        top: 50%;
+        right: -50px;
+        width: 150px;
+        height: 150px;
+        background: var(--category-color);
+        border-radius: 50%;
+        filter: blur(60px);
+        opacity: 0.1;
+        transform: translateY(-50%);
+        transition: all 0.3s ease;
+      }
+
+      .post-card:hover {
+        transform: translateY(-4px);
+        box-shadow: var(--shadow-md);
+        background: var(--color-surface);
+      }
+
+      .post-card:hover::before {
+        opacity: 1;
+      }
+
+      .post-card:hover::after {
+        opacity: 0.15;
+        transform: translateY(-50%) scale(1.1);
+      }
+
+      .post-card-header {
+        margin-bottom: 1rem;
+        position: relative;
+        z-index: 1;
+      }
+
+      .post-card-title {
+        font-family: var(--font-body);
+        font-size: 1.25rem;
+        font-weight: 600;
+        margin: 0 0 0.5rem;
+        color: var(--color-text);
+      }
+
+      .post-date {
+        display: flex;
+        align-items: center;
+        gap: 0.5rem;
+        font-size: 0.875rem;
+        color: var(--color-text-muted);
+      }
+
+      .post-date i {
+        color: var(--color-text-muted);
+        font-size: 0.875rem;
+      }
+
+      .post-card-description {
+        font-size: 0.9rem;
+        line-height: 1.6;
+        color: var(--color-text-muted);
+        margin: 0;
+        position: relative;
+        z-index: 1;
+      }
+
+      .section-divider {
+        border: none;
+        border-top: 1px solid var(--color-border);
+        margin: 0;
+      }
+
+      .no-results {
+        text-align: center;
+        padding: 4rem 2rem;
+        background: var(--color-surface);
+        border-radius: var(--radius-lg);
+        border: 1px solid var(--color-border);
+        box-shadow: var(--shadow-md);
+      }
+
+      .no-results i {
+        font-size: 3rem;
+        color: var(--color-text-muted);
+        margin-bottom: 1rem;
+      }
+
+      .no-results h3 {
+        font-family: var(--font-body);
+        font-size: 1.5rem;
+        font-weight: 600;
+        margin: 0 0 1rem;
+        color: var(--color-text);
+      }
+
+      .no-results p {
+        font-size: 1rem;
+        color: var(--color-text-muted);
+        margin: 0;
+      }
+
+      .no-posts-message {
+        text-align: center;
+        padding: 2rem;
+        background: var(--color-surface-hover);
+        border-radius: var(--radius-md);
+        border: 1px solid var(--color-border);
+      }
+
+      .no-posts-message i {
+        font-size: 2rem;
+        color: var(--color-text-muted);
+        margin-bottom: 1rem;
+      }
+
+      .no-posts-message h3 {
+        font-family: var(--font-body);
+        font-size: 1.25rem;
+        font-weight: 600;
+        margin: 0 0 0.5rem;
+        color: var(--color-text);
+      }
+
+      .no-posts-message p {
+        font-size: 0.9rem;
+        color: var(--color-text-muted);
+        margin: 0;
+      }
+
+      @media (max-width: 1200px) {
+        .layout-grid {
+          grid-template-columns: 1fr;
+        }
+
+        .sidebar {
+          position: static;
+        }
+      }
+
+      @media (max-width: 768px) {
+        .post-layout {
+          padding: 2rem 0;
+        }
+
+        .container {
+          padding: 0 1rem;
+        }
+
+        .post-content {
+          padding: 2rem;
+        }
+
+        .post-title {
+          font-size: 2rem;
+        }
+
+        .post-description {
+          font-size: 1.1rem;
+        }
+
+        .section-card {
+          padding: 1.5rem;
+        }
+
+        .section-title {
+          font-size: 1.5rem;
+        }
+
+        .posts-grid {
+          grid-template-columns: 1fr;
+        }
+      }
+
+      @media (max-width: 480px) {
+        .post-title {
+          font-size: 1.75rem;
+        }
+
+        .post-content {
+          padding: 1.5rem;
+        }
+
+        .section-header {
+          flex-direction: column;
+          align-items: flex-start;
+          gap: 0.5rem;
+        }
+      }
+    </style>
+  </body>
+</html>

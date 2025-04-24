@@ -1,0 +1,499 @@
+---
+import { getCollection } from "astro:content";
+import FormattedDate from "../../../components/FormattedDate.astro";
+import CategoryLayout from "@/layouts/CategoryLayout.astro";
+
+const posts = (await getCollection("deepseek")).sort(
+  (a, b) => b.data.pubDate.valueOf() - a.data.pubDate.valueOf()
+);
+---
+
+<CategoryLayout
+  title="DeepSeek"
+  description="Explora los apuntes de DeepSeek y discovery que se hizo en base a este modelo."
+>
+  <div class="container">
+    <div class="search-section">
+      <div class="search-container">
+        <i class="ph-magnifying-glass search-icon"></i>
+        <input
+          type="text"
+          id="searchInput"
+          class="search-input"
+          placeholder="Buscar en DeepSeek.."
+        />
+      </div>
+      <div class="filters-container">
+        <select id="sortSelect" class="sort-select">
+          <option value="date-desc">Más recientes primero</option>
+          <option value="date-asc">Más antiguos primero</option>
+          <option value="title-asc">Título (A-Z)</option>
+          <option value="title-desc">Título (Z-A)</option>
+        </select>
+      </div>
+    </div>
+
+    <div class="posts-container">
+      <div class="posts-grid">
+        {
+          posts.map((post) => (
+            <a href={`/documentacion/deepseek/${post.slug}`} class="post-card">
+              <div class="post-card-content">
+                <div class="post-card-header">
+                  <span class="post-date">
+                    <i class="ph-calendar" />
+                    <FormattedDate date={post.data.pubDate} />
+                  </span>
+                  <h3 class="post-card-title">{post.data.title}</h3>
+                </div>
+                <p class="post-card-description">{post.data.description}</p>
+                <div class="post-card-footer">
+                  <span class="read-more">
+                    Leer más
+                    <i class="ph-arrow-right" />
+                  </span>
+                </div>
+              </div>
+              <div class="post-card-decoration" />
+            </a>
+          ))
+        }
+      </div>
+    </div>
+  </div>
+
+  <script>
+    const searchInput = document.getElementById("searchInput");
+    const sortSelect = document.getElementById(
+      "sortSelect"
+    ) as HTMLSelectElement;
+    const postCards = document.querySelectorAll(".post-card");
+    const noResultsMessage = document.createElement("div");
+    noResultsMessage.className = "no-results";
+    noResultsMessage.innerHTML = `
+      <i class="ph-magnifying-glass"></i>
+      <h3>No se encontraron resultados</h3>
+      <p>Intenta con otros términos de búsqueda</p>
+    `;
+
+    function sortPosts(sortValue: string) {
+      const postsContainer = document.querySelector(".posts-grid");
+      if (!postsContainer) return;
+
+      const posts = Array.from(postCards);
+
+      posts.sort((a, b) => {
+        const titleA =
+          a.querySelector(".post-card-title")?.textContent?.toLowerCase() || "";
+        const titleB =
+          b.querySelector(".post-card-title")?.textContent?.toLowerCase() || "";
+        const dateA = a.querySelector(".post-date")?.textContent || "";
+        const dateB = b.querySelector(".post-date")?.textContent || "";
+
+        const dateObjA = new Date(dateA);
+        const dateObjB = new Date(dateB);
+
+        switch (sortValue) {
+          case "date-desc":
+            return dateObjB.getTime() - dateObjA.getTime();
+          case "date-asc":
+            return dateObjA.getTime() - dateObjB.getTime();
+          case "title-asc":
+            return titleA.localeCompare(titleB, "es", { sensitivity: "base" });
+          case "title-desc":
+            return titleB.localeCompare(titleA, "es", { sensitivity: "base" });
+          default:
+            return 0;
+        }
+      });
+
+      postsContainer.innerHTML = "";
+
+      posts.forEach((post) => {
+        if ((post as HTMLElement).style.display !== "none") {
+          postsContainer.appendChild(post);
+        }
+      });
+    }
+
+    if (sortSelect) {
+      sortPosts(sortSelect.value);
+
+      sortSelect.addEventListener("change", (e) => {
+        const target = e.target as HTMLSelectElement;
+        sortPosts(target.value);
+      });
+    }
+
+    if (searchInput) {
+      searchInput.addEventListener("input", (e) => {
+        const target = e.target as HTMLInputElement;
+        const searchTerm = target.value.toLowerCase();
+        let hasResults = false;
+
+        postCards.forEach((card) => {
+          const titleElement = card.querySelector(".post-card-title");
+          const descriptionElement = card.querySelector(
+            ".post-card-description"
+          );
+
+          if (titleElement && descriptionElement) {
+            const title = titleElement.textContent?.toLowerCase() || "";
+            const description =
+              descriptionElement.textContent?.toLowerCase() || "";
+
+            const matches =
+              title.includes(searchTerm) || description.includes(searchTerm);
+            (card as HTMLElement).style.display = matches ? "block" : "none";
+
+            if (matches) {
+              hasResults = true;
+            }
+          }
+        });
+
+        const postsContainer = document.querySelector(".posts-container");
+        if (postsContainer) {
+          if (!hasResults && searchTerm) {
+            if (!document.querySelector(".no-results")) {
+              postsContainer.appendChild(noResultsMessage);
+            }
+          } else {
+            const existingNoResults = document.querySelector(".no-results");
+            if (existingNoResults) {
+              existingNoResults.remove();
+            }
+          }
+        }
+      });
+    }
+  </script>
+
+  <style>
+    .container {
+      max-width: 1400px;
+      margin: 0 auto;
+      padding: 0 2rem;
+    }
+
+    .search-section {
+      background: var(--color-surface);
+      border-radius: var(--radius-lg);
+      padding: 1.5rem;
+      margin-bottom: 2rem;
+      backdrop-filter: blur(10px);
+      border: 1px solid var(--color-border);
+      box-shadow: var(--shadow-md);
+      transition: transform 0.3s ease;
+      display: flex;
+      flex-direction: column;
+      gap: 1rem;
+    }
+
+    .search-section:hover {
+      transform: translateY(-2px);
+    }
+
+    .search-container {
+      display: flex;
+      align-items: center;
+      gap: 1rem;
+      background: var(--color-surface-hover);
+      border-radius: var(--radius-md);
+      padding: 0.75rem 1rem;
+      border: 1px solid var(--color-border);
+      transition: all 0.3s ease;
+    }
+
+    .search-container:focus-within {
+      border-color: var(--color-accent);
+      box-shadow: 0 0 0 2px rgba(229, 193, 255, 0.1);
+    }
+
+    .search-icon {
+      color: var(--color-text-muted);
+      font-size: 1.25rem;
+      transition: color 0.3s ease;
+    }
+
+    .search-container:focus-within .search-icon {
+      color: var(--color-accent);
+    }
+
+    .search-input {
+      flex: 1;
+      background: transparent;
+      border: none;
+      color: var(--color-text);
+      font-family: var(--font-body);
+      font-size: 1rem;
+      padding: 0.5rem 0;
+    }
+
+    .search-input:focus {
+      outline: none;
+    }
+
+    .search-input::placeholder {
+      color: var(--color-text-muted);
+    }
+
+    .posts-container {
+      position: relative;
+    }
+
+    .posts-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+      gap: 1.5rem;
+    }
+
+    .post-card {
+      position: relative;
+      overflow: hidden;
+      background: var(--color-surface);
+      border-radius: var(--radius-lg);
+      padding: 0;
+      text-decoration: none;
+      transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+      border: 1px solid var(--color-border);
+      box-shadow: var(--shadow-sm);
+      display: flex;
+      flex-direction: column;
+      height: 100%;
+    }
+
+    .post-card-decoration {
+      position: absolute;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 4px;
+      background: linear-gradient(
+        90deg,
+        var(--color-accent) 0%,
+        var(--color-accent-dark) 100%
+      );
+      transition: all 0.3s ease;
+    }
+
+    .post-card:hover {
+      transform: translateY(-4px);
+      box-shadow: var(--shadow-lg);
+    }
+
+    .post-card:hover .post-card-decoration {
+      height: 6px;
+    }
+
+    .post-card-content {
+      position: relative;
+      z-index: 2;
+      display: flex;
+      flex-direction: column;
+      height: 100%;
+      padding: 2rem;
+    }
+
+    .post-card-header {
+      margin-bottom: 1.5rem;
+      display: flex;
+      flex-direction: column;
+      gap: 1rem;
+    }
+
+    .post-date {
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+      font-size: 0.875rem;
+      color: var(--color-text-muted);
+      text-transform: uppercase;
+      letter-spacing: 0.05em;
+    }
+
+    .post-date i {
+      color: var(--color-accent);
+      font-size: 0.875rem;
+    }
+
+    .post-card-title {
+      font-size: 1.75rem;
+      font-weight: 800;
+      margin: 0;
+      color: var(--color-text);
+      transition: color 0.3s ease;
+      line-height: 1.2;
+      background: linear-gradient(
+        90deg,
+        var(--color-text) 0%,
+        var(--color-text) 100%
+      );
+      -webkit-background-clip: text;
+      background-clip: text;
+      -webkit-text-fill-color: transparent;
+    }
+
+    .post-card:hover .post-card-title {
+      background: linear-gradient(
+        90deg,
+        var(--color-accent) 0%,
+        var(--color-accent-dark) 100%
+      );
+      -webkit-background-clip: text;
+      background-clip: text;
+      -webkit-text-fill-color: transparent;
+    }
+
+    .post-card-description {
+      font-size: 1.1rem;
+      line-height: 1.6;
+      color: var(--color-text-muted);
+      margin: 0 0 2rem;
+      flex-grow: 1;
+    }
+
+    .post-card-footer {
+      display: flex;
+      justify-content: flex-end;
+      margin-top: auto;
+      padding-top: 1.5rem;
+      border-top: 1px solid var(--color-border);
+    }
+
+    .read-more {
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+      color: var(--color-accent);
+      font-size: 0.875rem;
+      font-weight: 600;
+      transition: all 0.3s ease;
+      text-transform: uppercase;
+      letter-spacing: 0.05em;
+    }
+
+    .post-card:hover .read-more {
+      transform: translateX(4px);
+    }
+
+    .read-more i {
+      transition: transform 0.3s ease;
+    }
+
+    .post-card:hover .read-more i {
+      transform: translateX(4px);
+    }
+
+    .no-results {
+      text-align: center;
+      padding: 4rem 2rem;
+      background: var(--color-surface);
+      border-radius: var(--radius-lg);
+      border: 1px solid var(--color-border);
+      box-shadow: var(--shadow-md);
+      grid-column: 1 / -1;
+      animation: fadeIn 0.3s ease;
+    }
+
+    @keyframes fadeIn {
+      from {
+        opacity: 0;
+        transform: translateY(10px);
+      }
+      to {
+        opacity: 1;
+        transform: translateY(0);
+      }
+    }
+
+    .no-results i {
+      font-size: 3rem;
+      color: var(--color-text-muted);
+      margin-bottom: 1rem;
+    }
+
+    .no-results h3 {
+      font-size: 1.5rem;
+      font-weight: 600;
+      margin: 0 0 1rem;
+      color: var(--color-text);
+    }
+
+    .no-results p {
+      font-size: 1rem;
+      color: var(--color-text-muted);
+      margin: 0;
+    }
+
+    .filters-container {
+      display: flex;
+      justify-content: flex-end;
+    }
+
+    .sort-select {
+      width: 100%;
+      max-width: 300px;
+      padding: 1rem 1.25rem;
+      background: rgba(20, 20, 20, 0.8);
+      border: 1px solid rgba(255, 255, 255, 0.1);
+      border-radius: 12px;
+      color: var(--color-text);
+      font-size: 1rem;
+      cursor: pointer;
+      appearance: none;
+      -webkit-appearance: none;
+      -moz-appearance: none;
+      background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='24' height='24' viewBox='0 0 24 24' fill='none' stroke='%23e5c1ff' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpolyline points='6 9 12 15 18 9'%3E%3C/polyline%3E%3C/svg%3E");
+      background-repeat: no-repeat;
+      background-position: right 1rem center;
+      background-size: 1.2rem;
+      transition: all 0.3s ease;
+    }
+
+    .sort-select:hover {
+      border-color: var(--color-accent);
+      background-color: rgba(30, 30, 30, 0.8);
+    }
+
+    .sort-select:focus {
+      outline: none;
+      border-color: var(--color-accent);
+      box-shadow: 0 0 0 2px rgba(229, 193, 255, 0.2);
+    }
+
+    .sort-select option {
+      background: rgb(20, 20, 20);
+      color: var(--color-text);
+      padding: 1rem;
+    }
+
+    @media (min-width: 768px) {
+      .search-section {
+        flex-direction: row;
+        align-items: center;
+        justify-content: space-between;
+        gap: 1rem;
+      }
+
+      .search-container {
+        flex: 1;
+        max-width: 500px;
+      }
+
+      .filters-container {
+        margin-left: 1rem;
+      }
+    }
+
+    @media (max-width: 768px) {
+      .container {
+        padding: 0 1rem;
+      }
+
+      .posts-grid {
+        grid-template-columns: 1fr;
+      }
+    }
+  </style>
+</CategoryLayout>
