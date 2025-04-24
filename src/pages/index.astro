@@ -610,11 +610,10 @@ const allPosts = [
         position: relative;
         border-radius: 16px;
         background: var(--color-bg);
-        transition: transform 0.5s cubic-bezier(0.4, 0, 0.2, 1);
+        transition: 0.5s cubic-bezier(0.4, 0, 0.2, 1);
         box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.5);
         will-change: transform;
         aspect-ratio: 16/9;
-        overflow: hidden;
       }
 
       .image-main:hover,
@@ -651,6 +650,7 @@ const allPosts = [
         padding: 1.5rem;
         box-sizing: border-box;
         backdrop-filter: blur(10px);
+        transition: 0.5s ease;
       }
 
       .image-text p {
@@ -779,6 +779,7 @@ const allPosts = [
         .image-main,
         .image-secondary {
           aspect-ratio: auto;
+          overflow: hidden;
         }
 
         .image-text {
